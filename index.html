@@ -102,7 +102,7 @@
     });
 
     touchpad.addEventListener("touchmove", (e) => {
-      e.preventDefault(); // Evita el scroll
+      e.preventDefault();
 
       const touch = e.touches[0];
       const deltaX = touch.clientX - lastX;
@@ -111,14 +111,19 @@
       lastX = touch.clientX;
       lastY = touch.clientY;
 
+      // Enviamos DeltaX y DeltaY con la misma capitalización que el DTO
       fetch("https://192.168.1.2:7140/api/mouse/move-touchpad", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ deltaX, deltaY })
+        body: JSON.stringify({
+          DeltaX: deltaX,
+          DeltaY: deltaY
+        })
       });
     });
+
     </script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json.Serialization;
 using WindowsInput;
 using WindowsInput.Native;
 
@@ -16,21 +17,6 @@ public class Program
 			.AllowAnyMethod()
 			.AllowAnyHeader()));
 
-		builder.WebHost.ConfigureKestrel(options =>
-		{
-			options.ListenAnyIP(7135, listenOptions =>
-			{
-				listenOptions.UseHttps(); // O quitá esta línea si querés solo HTTP
-			});
-		});
-
-		builder.WebHost.ConfigureKestrel(options =>
-		{
-			options.ListenAnyIP(7140, listenOptions =>
-			{
-				listenOptions.UseHttps(); // O quitá esta línea si querés solo HTTP
-			});
-		});
 
 		var app = builder.Build();
 		app.UseCors("allow-all");
@@ -47,4 +33,7 @@ public class Program
 	}
 }
 
-public record MouseMoveDto(int DeltaX, int DeltaY);
+public record MouseMoveDto(
+	[property: JsonPropertyName("DeltaX")] int DeltaX,
+	[property: JsonPropertyName("DeltaY")] int DeltaY
+);
