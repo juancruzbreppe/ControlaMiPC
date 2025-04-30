@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Control Remoto del Mouse</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        button, input {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Control Remoto del Mouse</h1>
+
+    <label>IP de la computadora (sin http://):</label>
+    <input type="text" id="ip" placeholder="192.168.x.x:puerto" />
+
+    <h2>Movimiento</h2>
+    <input type="number" id="x" placeholder="X" />
+    <input type="number" id="y" placeholder="Y" />
+    <label><input type="checkbox" id="relative" /> Relativo</label>
+    <button onclick="moveMouse()">Mover</button>
+
+    <h2>Click</h2>
+    <select id="button">
+        <option value="left">Izquierdo</option>
+        <option value="right">Derecho</option>
+        <option value="middle">Centro</option>
+    </select>
+    <label><input type="checkbox" id="doubleClick" /> Doble Click</label>
+    <button onclick="clickMouse()">Click</button>
+
+    <h2>Scroll</h2>
+    <input type="number" id="scrollAmount" value="120" />
+    <label><input type="checkbox" id="horizontalScroll" /> Horizontal</label>
+    <button onclick="scrollMouse()">Scroll</button>
+
+    <h2>Posición</h2>
+    <button onclick="getPosition()">Obtener posición</button>
+    <p id="position"></p>
+
+    <script>
+    function getBaseUrl() {
+      const ip = document.getElementById("ip").value;
+      return `http://${ip}/api/mouse`;
+    }
+
+    async function moveMouse() {
+      await fetch(`${getBaseUrl()}/move`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          x: parseInt(document.getElementById("x").value),
+          y: parseInt(document.getElementById("y").value),
+          relative: document.getElementById("relative").checked
+        })
+      });
+    }
+
+    async function clickMouse() {
+      const button = document.getElementById("button").value;
+      const doubleClick = document.getElementById("doubleClick").checked;
+      await fetch(`${getBaseUrl()}/click?button=${button}&doubleClick=${doubleClick}`, {
+        method: "POST"
+      });
+    }
+
+    async function scrollMouse() {
+      const amount = document.getElementById("scrollAmount").value;
+      const horizontal = document.getElementById("horizontalScroll").checked;
+      await fetch(`${getBaseUrl()}/scroll?amount=${amount}&horizontal=${horizontal}`, {
+        method: "POST"
+      });
+    }
+
+    async function getPosition() {
+      const res = await fetch(`${getBaseUrl()}/position`);
+      const data = await res.json();
+      document.getElementById("position").innerText = `X: ${data.x}, Y: ${data.y}`;
+    }
+    </script>
+</body>
+</html>

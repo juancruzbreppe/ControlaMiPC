@@ -1,7 +1,7 @@
 # Prerequisites
 *.d
 
-# Object files
+# Object files (C/C++ - los dejo por si alguna vez metés algo de esto, aunque no es típico en .NET)
 *.o
 *.ko
 *.obj
@@ -42,7 +42,7 @@
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
+# Kernel Module Compile Results (no es común en .NET, pero lo dejo si alguna vez tocás algo de sistema)
 *.mod*
 *.cmd
 .tmp_versions/
@@ -50,3 +50,55 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# -------------------------------
+# .NET / Visual Studio / Rider
+# -------------------------------
+
+# Build results
+bin/
+obj/
+
+# Visual Studio cache y config
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+project.lock.json
+project.nuget.cache
+*.nupkg
+packages/
+
+# Visual Studio Code
+.vscode/
+
+# Rider (JetBrains)
+.idea/
+
+# Logs
+*.log
+
+# OS-generated files (Windows / Mac)
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+
+# Cache de builds específicas (por si alguna vez generás algo fuera de debug)
+**/obj/Release/
+
+# Ocultos internos de Visual Studio
+**/.vs/**/DesignTimeBuild/
+**/.vs/ProjectEvaluation/
+
+# ---------------------------------
+# Específicos que tenías
+# ---------------------------------
+
+# Proyecto MasDeporte (ya sin hardcodear la carpeta)
+**/.vs/
+**/obj/
