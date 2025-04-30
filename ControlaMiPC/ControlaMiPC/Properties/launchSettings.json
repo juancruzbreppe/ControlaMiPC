@@ -9,22 +9,12 @@
     }
   },
   "profiles": {
-    "http": {
+    "ControlaMiPC": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://0.0.0.0:44318", // Cambio aquí
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://0.0.0.0:7135;http://0.0.0.0:44318", // Cambio aquí
+      "applicationUrl": "https://192.168.1.2:7135",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

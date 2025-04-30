@@ -12,6 +12,15 @@ builder.WebHost.ConfigureKestrel(options =>
 	options.ListenAnyIP(44318);  // El puerto debe coincidir con el que usas
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+	options.ListenAnyIP(7135, listenOptions =>
+	{
+		listenOptions.UseHttps(); // O quitá esta línea si querés solo HTTP
+	});
+});
+
+
 var app = builder.Build();
 
 // Activar Swagger en desarrollo
