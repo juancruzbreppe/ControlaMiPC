@@ -1,5 +1,6 @@
 ﻿using ControlaMiPC.Helpers;
 using ControlaMiPC.Modelos;
+using ControlaMiPC.Modelos.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,18 @@ namespace ControlaMiPC.Controllers
 	[Route("api/mouse")]
 	public class MouseController : ControllerBase
 	{
+		/*[HttpPost("move-touchpad")]
+		public IActionResult MoveMouse([FromBody] MouseMoveDto move)
+		{
+			var position = System.Windows.Forms.Cursor.Position;
+			System.Windows.Forms.Cursor.Position = new System.Drawing.Point(
+				position.X + move.DeltaX,
+				position.Y + move.DeltaY
+			);
+
+			return Ok();
+		}*/
+
 		[HttpPost("move")]
 		public IActionResult MoveMouse([FromBody] MouseMoveRequest request)
 		{

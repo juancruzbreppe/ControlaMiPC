@@ -28,6 +28,12 @@
     <label><input type="checkbox" id="relative" /> Relativo</label>
     <button onclick="moveMouse()">Mover</button>
 
+    <br /><br />
+    <div id="touchpad" style="width:100%; height:400px; background:#eee; touch-action:none;">
+      Desliza aquí para mover el mouse
+    </div>
+    <br /><br />
+
     <h2>Click</h2>
     <select id="button">
         <option value="left">Izquierdo</option>
@@ -85,6 +91,34 @@
       const data = await res.json();
       document.getElementById("position").innerText = `X: ${data.x}, Y: ${data.y}`;
     }
+
+    const touchpad = document.getElementById("touchpad");
+    let lastX = 0, lastY = 0;
+
+    touchpad.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+    });
+
+    touchpad.addEventListener("touchmove", (e) => {
+      e.preventDefault(); // Evita el scroll
+
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - lastX;
+      const deltaY = touch.clientY - lastY;
+
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+
+      fetch("https://192.168.1.2:7135/api/mouse/move-touchpad", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ deltaX, deltaY })
+      });
+    });
     </script>
 </body>
 </html>
