@@ -112,15 +112,12 @@
       lastY = touch.clientY;
 
       // Enviamos DeltaX y DeltaY con la misma capitalización que el DTO
-      fetch("https://192.168.1.2:7140/api/mouse/move-touchpad", {
+      fetch(`${getBaseUrl()}/move-touchpad`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          DeltaX: deltaX,
-          DeltaY: deltaY
-        })
+        body: JSON.stringify({ deltaX, deltaY })
       });
     });
 
