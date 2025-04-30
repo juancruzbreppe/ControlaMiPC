@@ -31,6 +31,14 @@ builder.WebHost.ConfigureKestrel(options =>
 	});
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+	options.ListenAnyIP(7140, listenOptions =>
+	{
+		listenOptions.UseHttps(); // O quitá esta línea si querés solo HTTP
+	});
+});
+
 
 var app = builder.Build();
 app.UseCors("AllowGitHubPages");

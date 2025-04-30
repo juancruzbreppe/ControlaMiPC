@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using WindowsInput;
@@ -15,6 +16,22 @@ public class Program
 			.AllowAnyMethod()
 			.AllowAnyHeader()));
 
+		builder.WebHost.ConfigureKestrel(options =>
+		{
+			options.ListenAnyIP(7135, listenOptions =>
+			{
+				listenOptions.UseHttps(); // O quitá esta línea si querés solo HTTP
+			});
+		});
+
+		builder.WebHost.ConfigureKestrel(options =>
+		{
+			options.ListenAnyIP(7140, listenOptions =>
+			{
+				listenOptions.UseHttps(); // O quitá esta línea si querés solo HTTP
+			});
+		});
+
 		var app = builder.Build();
 		app.UseCors("allow-all");
 
@@ -26,7 +43,7 @@ public class Program
 			return Results.Ok();
 		});
 
-		app.Run("https://0.0.0.0:7135");
+		app.Run("https://0.0.0.0:7140");
 	}
 }
 
