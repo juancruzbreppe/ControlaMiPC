@@ -7,6 +7,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowGitHubPages", policy =>
+	{
+		policy.WithOrigins("https://juancruzbreppe.github.io")
+			  .AllowAnyHeader()
+			  .AllowAnyMethod();
+	});
+});
+
+
 builder.WebHost.ConfigureKestrel(options =>
 {
 	options.ListenAnyIP(44318);  // El puerto debe coincidir con el que usas
@@ -22,6 +33,7 @@ builder.WebHost.ConfigureKestrel(options =>
 
 
 var app = builder.Build();
+app.UseCors("AllowGitHubPages");
 
 // Activar Swagger en desarrollo
 if (app.Environment.IsDevelopment())
