@@ -1,0 +1,183 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Paleta dark con acentos neón */
+  --bg-dark: #121212;
+  --bg-panel: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --accent: #00e5ff;
+  --accent2: #00ff66;
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
+  display: grid;
+  grid-template-rows: 60px 1fr;
+  grid-template-columns: 80px 1fr;
+  height: 100vh;
+}
+
+header {
+  grid-column: 1 / -1;
+  background: var(--bg-panel);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  box-shadow: 0 2px 5px var(--shadow);
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--accent);
+}
+
+.status {
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.status.connected {
+  background: #00c853;
+  color: #121212;
+}
+
+.status.disconnected {
+  background: #b71c1c;
+  color: #fff;
+}
+
+aside {
+  background: var(--bg-panel);
+  box-shadow: 2px 0 5px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+}
+
+aside nav button {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+aside nav button.active,
+aside nav button:hover {
+  background: var(--accent2);
+  color: #121212;
+}
+
+main {
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--bg-dark);
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.control-group {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  background: var(--bg-panel);
+  border: 1px solid var(--shadow);
+  color: var(--text-primary);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  flex: 1;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+button {
+  background: var(--accent);
+  border: none;
+  color: #121212;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px var(--shadow);
+  transition: transform 0.1s;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.03);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+.touchpad {
+  background: var(--bg-panel);
+  border: 2px dashed var(--accent2);
+  border-radius: 0.5rem;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: var(--accent2);
+  border: none;
+  color: #121212;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chip:hover {
+  background: var(--accent);
+}
+
+.console {
+  background: #1b1b1b;
+  border: 1px solid var(--shadow);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-family: 'Courier New', monospace;
+  height: 150px;
+  overflow-y: auto;
+  color: var(--text-primary);
+}

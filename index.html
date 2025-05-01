@@ -2,214 +2,70 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Control Remoto del Mouse</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-        }
-
-        button, input {
-            margin: 5px;
-            padding: 10px;
-            font-size: 16px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Remoto</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Control Remoto del Mouse</h1>
-
-    <label>IP de la computadora (sin http://):</label>
-    <input type="text" id="ip" placeholder="192.168.x.x:puerto" />
-
-    <h2>Teclado Virtual</h2>
-    <input type="text" id="textInput" placeholder="Escribí algo..." />
-    <button onclick="writeText()">Enviar texto</button>
-    <br />
-    <select id="keySelect">
-        <option value="LEFT">◀️ Izquierda</option>
-        <option value="RIGHT">▶️ Derecha</option>
-        <option value="RETURN">⏎ Enter</option>
-        <option value="ESCAPE">⎋ Esc</option>
-    </select>
-    <button onclick="pressKey()">Presionar tecla</button>
-
-
-    <label><input type="checkbox" id="presentationMode" onchange="togglePresMode()"> Modo Presentación</label>
-    <br />
-    <button onclick="pressKey('RIGHT')">▶️ Siguiente</button>
-    <button onclick="pressKey('LEFT')">◀️ Anterior</button>
-
-
-    <h2>Movimiento</h2>
-    <input type="number" id="x" placeholder="X" />
-    <input type="number" id="y" placeholder="Y" />
-    <label><input type="checkbox" id="relative" /> Relativo</label>
-    <button onclick="moveMouse()">Mover</button>
-
-
-    <label>Sensibilidad: <span id="sensDisplay">1.0×</span></label>
-    <input type="range" id="sensitivity" min="0.2" max="3" step="0.1" value="1"
-           oninput="document.getElementById('sensDisplay').innerText = this.value + '×'">
-    <br /><br />
-    <div id="touchpad" style="width:100%; height:400px; background:#eee; touch-action:none;">
-        Desliza aquí para mover el mouse
-    </div>
-    <br /><br />
-
-    <h2>Click</h2>
-    <select id="button">
-        <option value="left">Izquierdo</option>
-        <option value="right">Derecho</option>
-        <option value="middle">Centro</option>
-    </select>
-    <label><input type="checkbox" id="doubleClick" /> Doble Click</label>
-    <button onclick="clickMouse()">Click</button>
-
-    <h2>Scroll</h2>
-    <input type="number" id="scrollAmount" value="120" />
-    <label><input type="checkbox" id="horizontalScroll" /> Horizontal</label>
-    <button onclick="scrollMouse()">Scroll</button>
-
-
-
-    <h2>Posición</h2>
-    <button onclick="getPosition()">Obtener posición</button>
-    <p id="position"></p>
-
-    <script>
-        function getBaseUrl() {
-            const ip = document.getElementById("ip").value;
-            return `https://${ip}/api/mouse`;
-        }
-
-        function getBaseUrlKeyboard() {
-            const ip = document.getElementById("ip").value;
-            return `https://${ip}/api/keyboard`;
-        }
-
-        async function moveMouse() {
-            await fetch(`${getBaseUrl()}/move`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    x: parseInt(document.getElementById("x").value),
-                    y: parseInt(document.getElementById("y").value),
-                    relative: document.getElementById("relative").checked
-                })
-            });
-        }
-
-        async function clickMouse() {
-            const button = document.getElementById("button").value;
-            const doubleClick = document.getElementById("doubleClick").checked;
-            await fetch(`${getBaseUrl()}/click?button=${button}&doubleClick=${doubleClick}`, {
-                method: "POST"
-            });
-        }
-
-        async function scrollMouse() {
-            const amount = document.getElementById("scrollAmount").value;
-            const horizontal = document.getElementById("horizontalScroll").checked;
-            await fetch(`${getBaseUrl()}/scroll?amount=${amount}&horizontal=${horizontal}`, {
-                method: "POST"
-            });
-        }
-
-        async function getPosition() {
-            const res = await fetch(`${getBaseUrl()}/position`);
-            const data = await res.json();
-            document.getElementById("position").innerText = `X: ${data.x}, Y: ${data.y}`;
-        }
-
-        const touchpad = document.getElementById("touchpad");
-        let lastX = 0, lastY = 0;
-
-        touchpad.addEventListener("touchstart", (e) => {
-            const touch = e.touches[0];
-            lastX = touch.clientX;
-            lastY = touch.clientY;
-        });
-
-        touchpad.addEventListener("touchmove", (e) => {
-            e.preventDefault();
-
-
-
-            if (e.touches.length === 1) {
-
-                const sens = parseFloat(document.getElementById("sensitivity").value);
-                const touch = e.touches[0];
-                let deltaX = touch.clientX - lastX;
-                let deltaY = touch.clientY - lastY;
-                deltaX = Math.round(deltaX * sens);
-                deltaY = Math.round(deltaY * sens);
-
-                lastX = touch.clientX;
-                lastY = touch.clientY;
-
-                // Enviamos DeltaX y DeltaY con la misma capitalización que el DTO
-                fetch(`${getBaseUrl()}/move-touchpad`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json", //  Asegura que esto no tenga errores de tipado
-                        "Accept": "application/json"        //  Opcional, pero ayuda a clarificar
-                    },
-                    body: JSON.stringify({
-                        deltaX: Math.round(deltaX),  //  Redondea por si acaso
-                        deltaY: Math.round(deltaY)
-                    })
-                }).then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json(); //  Si el backend devuelve un JSON
-                }).catch(error => console.error("Error en la petición:", error));
-            }
-            else if (e.touches.length === 2) {
-                // Scroll vertical
-                const d0 = e.touches[0], d1 = e.touches[1];
-                // Calculá distancia vertical media
-                const midY = (d0.clientY + d1.clientY) / 2;
-                // tenés que guardar lastMidY, etc…
-                const deltaScroll = lastMidY - midY;
-                lastMidY = midY;
-                fetch(`${getBaseUrl()}/scroll`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        Amount: Math.round(deltaScroll),
-                        Horizontal: false
-                    })
-                });
-            }
-        });
-
-        function togglePresMode() {
-            document.getElementById("touchpad").style.cursor =
-                document.getElementById("presentationMode").checked ? "none" : "auto";
-        }
-
-
-        async function writeText() {
-            const text = document.getElementById("textInput").value;
-            await fetch(`${getBaseUrlKeyboard()}/write`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ Text: text })
-            });
-        }
-
-        async function pressKey() {
-            const key = document.getElementById("keySelect").value;
-            await fetch(`${getBaseUrlKeyboard()}/press`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ Key: key })
-            });
-        }
-
-
-    </script>
+    <header>
+        <div class="logo">ControlaMiPC</div>
+        <div id="status" class="status disconnected">Desconectado</div>
+    </header>
+    <aside>
+        <nav>
+            <button data-view="mouse" class="active"><i class="fas fa-mouse"></i></button>
+            <button data-view="keyboard"><i class="fas fa-keyboard"></i></button>
+            <button data-view="commands"><i class="fas fa-terminal"></i></button>
+        </nav>
+    </aside>
+    <main>
+        <!-- Mouse View -->
+        <section id="mouse" class="view">
+            <div class="control-group">
+                <label>IP de la PC:</label>
+                <input type="text" id="ip" placeholder="192.168.x.x:puerto">
+            </div>
+            <div class="control-group">
+                <label>Sensibilidad: <span id="sensDisplay">1.0×</span></label>
+                <input type="range" id="sensitivity" min="0.2" max="3" step="0.1" value="1">
+            </div>
+            <div id="touchpad" class="touchpad">
+                <span>Desliza aquí</span>
+            </div>
+            <div class="buttons">
+                <button onclick="clickMouse()"><i class="fas fa-mouse-pointer"></i> Click</button>
+                <button onclick="scrollMouse()"><i class="fas fa-scroll"></i> Scroll</button>
+                <button onclick="getPosition()"><i class="fas fa-crosshairs"></i> Posición</button>
+            </div>
+            <div id="position" class="output"></div>
+        </section>
+        <!-- Keyboard View -->
+        <section id="keyboard" class="view hidden">
+            <div class="control-group">
+                <input type="text" id="textInput" placeholder="Escribe algo...">
+                <button onclick="writeText()"><i class="fas fa-paper-plane"></i> Enviar</button>
+            </div>
+            <div class="control-group">
+                <select id="keySelect">
+                    <option value="LEFT">◀️ Izquierda</option>
+                    <option value="RIGHT">▶️ Derecha</option>
+                    <option value="RETURN">⏎ Enter</option>
+                    <option value="ESCAPE">⎋ Esc</option>
+                </select>
+                <button onclick="pressKey()"><i class="fas fa-keyboard"></i> Presionar</button>
+            </div>
+        </section>
+        <!-- Commands View -->
+        <section id="commands" class="view hidden">
+            <div class="chips">
+                <button class="chip" onclick="sendCommand('open_chrome')">Abrir Chrome</button>
+                <button class="chip" onclick="sendCommand('mute_audio')">Silenciar</button>
+            </div>
+            <div id="logConsole" class="console"></div>
+        </section>
+    </main>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
