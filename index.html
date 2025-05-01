@@ -34,7 +34,18 @@
                 <span>Desliza aquí</span>
             </div>
             <div class="buttons">
-                <button onclick="clickMouse()"><i class="fas fa-mouse-pointer"></i> Click</button>
+                <div class="control-group">
+                  <select id="buttonType">
+                    <option value="left">Izquierdo</option>
+                    <option value="right">Derecho</option>
+                    <option value="middle">Centro</option>
+                  </select>
+                  <label>
+                    <input type="checkbox" id="doubleClickToggle" />
+                    Doble Click
+                  </label>
+                  <button onclick="clickMouse()">Click</button>
+                </div>
                 <button onclick="scrollMouse()"><i class="fas fa-scroll"></i> Scroll</button>
                 <button onclick="getPosition()"><i class="fas fa-crosshairs"></i> Posición</button>
             </div>

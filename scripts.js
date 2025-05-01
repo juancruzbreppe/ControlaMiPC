@@ -28,11 +28,12 @@ setStatus(false);
 
 // Funciones existentes para mouse y teclado (omitiendo detalles)...
 async function clickMouse() {
-  const button = document.getElementById("button").value;
-  const doubleClick = document.getElementById("doubleClick").checked;
-  await fetch(`${getBaseUrl()}/click?button=${button}&doubleClick=${doubleClick}`, {
-      method: "POST"
+  const button = document.getElementById("buttonType").value;
+  const doubleClick = document.getElementById("doubleClickToggle").checked;
+  const res = await fetch(`${getBaseUrl()}/click?button=${button}&doubleClick=${doubleClick}`, {
+    method: "POST"
   });
+  if (!res.ok) console.error("Error al hacer click:", res.status);
 }
 
 async function scrollMouse() {
