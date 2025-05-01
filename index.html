@@ -27,18 +27,18 @@
     <button onclick="writeText()">Enviar texto</button>
     <br />
     <select id="keySelect">
-        <option value="VK_LEFT">◀️ Izquierda</option>
-        <option value="VK_RIGHT">▶️ Derecha</option>
-        <option value="VK_RETURN">⏎ Enter</option>
-        <option value="VK_ESCAPE">⎋ Esc</option>
+        <option value="LEFT">◀️ Izquierda</option>
+        <option value="RIGHT">▶️ Derecha</option>
+        <option value="RETURN">⏎ Enter</option>
+        <option value="ESCAPE">⎋ Esc</option>
     </select>
     <button onclick="pressKey()">Presionar tecla</button>
 
 
     <label><input type="checkbox" id="presentationMode" onchange="togglePresMode()"> Modo Presentación</label>
     <br />
-    <button onclick="pressKey('VK_RIGHT')">▶️ Siguiente</button>
-    <button onclick="pressKey('VK_LEFT')">◀️ Anterior</button>
+    <button onclick="pressKey('RIGHT')">▶️ Siguiente</button>
+    <button onclick="pressKey('LEFT')">◀️ Anterior</button>
 
 
     <h2>Movimiento</h2>
