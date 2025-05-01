@@ -2,7 +2,7 @@
 {
 	public class MouseMoveDto
 	{
-		public int DeltaX { get; set; }
-		public int DeltaY { get; set; }
+		public int deltaX { get; set; }
+		public int deltaY { get; set; }
 	}
 }

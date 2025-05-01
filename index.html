@@ -113,12 +113,23 @@
 
       // Enviamos DeltaX y DeltaY con la misma capitalización que el DTO
       fetch(`${getBaseUrl()}/move-touchpad`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ deltaX, deltaY })
-      });
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", //  Asegura que esto no tenga errores de tipado
+        "Accept": "application/json"        //  Opcional, pero ayuda a clarificar
+      },
+      body: JSON.stringify({ 
+        deltaX: Math.round(deltaX),  //  Redondea por si acaso
+        deltaY: Math.round(deltaY)
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json(); //  Si el backend devuelve un JSON
+    })
+    .catch(error => console.error("Error en la petición:", error));
     });
 
     </script>

@@ -16,7 +16,7 @@ namespace ControlaMiPC.Controllers
 		public IActionResult MoveMouseTouchpad([FromBody] MouseMoveDto move)
 		{
 			var sim = new InputSimulator();
-			sim.Mouse.MoveMouseBy(move.DeltaX, move.DeltaY);
+			sim.Mouse.MoveMouseBy(move.deltaX, move.deltaY);
 			return Ok();
 		}
 
