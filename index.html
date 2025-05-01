@@ -140,8 +140,8 @@
 
                 const sens = parseFloat(document.getElementById("sensitivity").value);
                 const touch = e.touches[0];
-                const deltaX = touch.clientX - lastX;
-                const deltaY = touch.clientY - lastY;
+                let deltaX = touch.clientX - lastX;
+                let deltaY = touch.clientY - lastY;
                 deltaX = Math.round(deltaX * sens);
                 deltaY = Math.round(deltaY * sens);
 
