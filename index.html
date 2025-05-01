@@ -22,15 +22,38 @@
     <label>IP de la computadora (sin http://):</label>
     <input type="text" id="ip" placeholder="192.168.x.x:puerto" />
 
+    <h2>Teclado Virtual</h2>
+    <input type="text" id="textInput" placeholder="Escribí algo..." />
+    <button onclick="writeText()">Enviar texto</button>
+    <br />
+    <select id="keySelect">
+        <option value="VK_LEFT">◀️ Izquierda</option>
+        <option value="VK_RIGHT">▶️ Derecha</option>
+        <option value="VK_RETURN">⏎ Enter</option>
+        <option value="VK_ESCAPE">⎋ Esc</option>
+    </select>
+    <button onclick="pressKey()">Presionar tecla</button>
+
+
+    <label><input type="checkbox" id="presentationMode" onchange="togglePresMode()"> Modo Presentación</label>
+    <br />
+    <button onclick="pressKey('VK_RIGHT')">▶️ Siguiente</button>
+    <button onclick="pressKey('VK_LEFT')">◀️ Anterior</button>
+
+
     <h2>Movimiento</h2>
     <input type="number" id="x" placeholder="X" />
     <input type="number" id="y" placeholder="Y" />
     <label><input type="checkbox" id="relative" /> Relativo</label>
     <button onclick="moveMouse()">Mover</button>
 
+
+    <label>Sensibilidad: <span id="sensDisplay">1.0×</span></label>
+    <input type="range" id="sensitivity" min="0.2" max="3" step="0.1" value="1"
+           oninput="document.getElementById('sensDisplay').innerText = this.value + '×'">
     <br /><br />
     <div id="touchpad" style="width:100%; height:400px; background:#eee; touch-action:none;">
-      Desliza aquí para mover el mouse
+        Desliza aquí para mover el mouse
     </div>
     <br /><br />
 
@@ -48,89 +71,144 @@
     <label><input type="checkbox" id="horizontalScroll" /> Horizontal</label>
     <button onclick="scrollMouse()">Scroll</button>
 
+
+
     <h2>Posición</h2>
     <button onclick="getPosition()">Obtener posición</button>
     <p id="position"></p>
 
     <script>
-    function getBaseUrl() {
-      const ip = document.getElementById("ip").value;
-      return `https://${ip}/api/mouse`;
-    }
+        function getBaseUrl() {
+            const ip = document.getElementById("ip").value;
+            return `https://${ip}/api/mouse`;
+        }
 
-    async function moveMouse() {
-      await fetch(`${getBaseUrl()}/move`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          x: parseInt(document.getElementById("x").value),
-          y: parseInt(document.getElementById("y").value),
-          relative: document.getElementById("relative").checked
-        })
-      });
-    }
+        function getBaseUrlKeyboard() {
+            const ip = document.getElementById("ip").value;
+            return `https://${ip}/api/keyboard`;
+        }
 
-    async function clickMouse() {
-      const button = document.getElementById("button").value;
-      const doubleClick = document.getElementById("doubleClick").checked;
-      await fetch(`${getBaseUrl()}/click?button=${button}&doubleClick=${doubleClick}`, {
-        method: "POST"
-      });
-    }
+        async function moveMouse() {
+            await fetch(`${getBaseUrl()}/move`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    x: parseInt(document.getElementById("x").value),
+                    y: parseInt(document.getElementById("y").value),
+                    relative: document.getElementById("relative").checked
+                })
+            });
+        }
 
-    async function scrollMouse() {
-      const amount = document.getElementById("scrollAmount").value;
-      const horizontal = document.getElementById("horizontalScroll").checked;
-      await fetch(`${getBaseUrl()}/scroll?amount=${amount}&horizontal=${horizontal}`, {
-        method: "POST"
-      });
-    }
+        async function clickMouse() {
+            const button = document.getElementById("button").value;
+            const doubleClick = document.getElementById("doubleClick").checked;
+            await fetch(`${getBaseUrl()}/click?button=${button}&doubleClick=${doubleClick}`, {
+                method: "POST"
+            });
+        }
 
-    async function getPosition() {
-      const res = await fetch(`${getBaseUrl()}/position`);
-      const data = await res.json();
-      document.getElementById("position").innerText = `X: ${data.x}, Y: ${data.y}`;
-    }
+        async function scrollMouse() {
+            const amount = document.getElementById("scrollAmount").value;
+            const horizontal = document.getElementById("horizontalScroll").checked;
+            await fetch(`${getBaseUrl()}/scroll?amount=${amount}&horizontal=${horizontal}`, {
+                method: "POST"
+            });
+        }
 
-    const touchpad = document.getElementById("touchpad");
-    let lastX = 0, lastY = 0;
+        async function getPosition() {
+            const res = await fetch(`${getBaseUrl()}/position`);
+            const data = await res.json();
+            document.getElementById("position").innerText = `X: ${data.x}, Y: ${data.y}`;
+        }
 
-    touchpad.addEventListener("touchstart", (e) => {
-      const touch = e.touches[0];
-      lastX = touch.clientX;
-      lastY = touch.clientY;
-    });
+        const touchpad = document.getElementById("touchpad");
+        let lastX = 0, lastY = 0;
 
-    touchpad.addEventListener("touchmove", (e) => {
-      e.preventDefault();
+        touchpad.addEventListener("touchstart", (e) => {
+            const touch = e.touches[0];
+            lastX = touch.clientX;
+            lastY = touch.clientY;
+        });
 
-      const touch = e.touches[0];
-      const deltaX = touch.clientX - lastX;
-      const deltaY = touch.clientY - lastY;
+        touchpad.addEventListener("touchmove", (e) => {
+            e.preventDefault();
 
-      lastX = touch.clientX;
-      lastY = touch.clientY;
 
-      // Enviamos DeltaX y DeltaY con la misma capitalización que el DTO
-      fetch(`${getBaseUrl()}/move-touchpad`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", //  Asegura que esto no tenga errores de tipado
-        "Accept": "application/json"        //  Opcional, pero ayuda a clarificar
-      },
-      body: JSON.stringify({ 
-        deltaX: Math.round(deltaX),  //  Redondea por si acaso
-        deltaY: Math.round(deltaY)
-      })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json(); //  Si el backend devuelve un JSON
-    })
-    .catch(error => console.error("Error en la petición:", error));
-    });
+
+            if (e.touches.length === 1) {
+
+                const sens = parseFloat(document.getElementById("sensitivity").value);
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - lastX;
+                const deltaY = touch.clientY - lastY;
+                deltaX = Math.round(deltaX * sens);
+                deltaY = Math.round(deltaY * sens);
+
+                lastX = touch.clientX;
+                lastY = touch.clientY;
+
+                // Enviamos DeltaX y DeltaY con la misma capitalización que el DTO
+                fetch(`${getBaseUrl()}/move-touchpad`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json", //  Asegura que esto no tenga errores de tipado
+                        "Accept": "application/json"        //  Opcional, pero ayuda a clarificar
+                    },
+                    body: JSON.stringify({
+                        deltaX: Math.round(deltaX),  //  Redondea por si acaso
+                        deltaY: Math.round(deltaY)
+                    })
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); //  Si el backend devuelve un JSON
+                }).catch(error => console.error("Error en la petición:", error));
+            }
+            else if (e.touches.length === 2) {
+                // Scroll vertical
+                const d0 = e.touches[0], d1 = e.touches[1];
+                // Calculá distancia vertical media
+                const midY = (d0.clientY + d1.clientY) / 2;
+                // tenés que guardar lastMidY, etc…
+                const deltaScroll = lastMidY - midY;
+                lastMidY = midY;
+                fetch(`${getBaseUrl()}/scroll`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        Amount: Math.round(deltaScroll),
+                        Horizontal: false
+                    })
+                });
+            }
+        });
+
+        function togglePresMode() {
+            document.getElementById("touchpad").style.cursor =
+                document.getElementById("presentationMode").checked ? "none" : "auto";
+        }
+
+
+        async function writeText() {
+            const text = document.getElementById("textInput").value;
+            await fetch(`${getBaseUrlKeyboard()}/write`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Text: text })
+            });
+        }
+
+        async function pressKey() {
+            const key = document.getElementById("keySelect").value;
+            await fetch(`${getBaseUrlKeyboard()}/press`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Key: key })
+            });
+        }
+
 
     </script>
 </body>

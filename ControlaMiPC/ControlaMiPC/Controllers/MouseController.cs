@@ -17,7 +17,7 @@ namespace ControlaMiPC.Controllers
 		{
 			var sim = new InputSimulator();
 			sim.Mouse.MoveMouseBy(move.deltaX, move.deltaY);
-			return Ok();
+			return Ok(new { success = true });
 		}
 
 		[HttpPost("move")]
